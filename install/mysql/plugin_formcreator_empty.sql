@@ -154,6 +154,8 @@ CREATE TABLE IF NOT EXISTS `glpi_plugin_formcreator_targetchanges` (
   `due_date_period` enum('minute','hour','day','month') DEFAULT NULL,
   `urgency_rule` enum('none','specific','answer') NOT NULL DEFAULT 'none',
   `urgency_question` int(11) NOT NULL DEFAULT '0',
+  `impact_rule` enum('none','specific','answer') NOT NULL DEFAULT 'none',
+  `impact_question` int(11) NOT NULL DEFAULT '0',
   `validation_followup` tinyint(1) NOT NULL DEFAULT '1',
   `destination_entity` enum('current','requester','requester_dynamic_first','requester_dynamic_last','form','validator','specific','user','entity') NOT NULL DEFAULT 'requester',
   `destination_entity_value` int(11) DEFAULT NULL,

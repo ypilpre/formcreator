@@ -1,0 +1,47 @@
+--- targetchange.class.php	2019-06-22 15:47:37.850105620 +0200
++++ "/home/yann/Documents/AKIOLIS/GLPI ITIL/formcreator/inc/targetchange.class.php"	2019-06-20 16:28:39.393432546 +0200
+@@ -49,6 +49,14 @@
+       ];
+    }
+ 
++   static function getEnumImpactRule() {
++      return [
++         'none'      => __('Medium', 'formcreator'),
++         'specific'  => __('Specific impact', 'formcreator'),
++         'answer'    => __('Equals to the answer to the question', 'formcreator'),
++      ];
++   }
++
+    static function getEnumCategoryRule() {
+       return [
+          'none'      => __('None', 'formcreator'),
+@@ -326,6 +334,11 @@
+       $this->showUrgencySettings($rand);
+ 
+       // -------------------------------------------------------------------------------------------
++      // Impact selection
++      // -------------------------------------------------------------------------------------------
++      $this->showImpactSettings($rand);
++
++      // -------------------------------------------------------------------------------------------
+       //  Tags
+       // -------------------------------------------------------------------------------------------
+       $this->showPluginTagsSettings($rand);
+@@ -902,6 +915,17 @@
+                $input['urgency_question'] = '0';
+          }
+ 
++         switch ($input['impact_rule']) {
++            case 'answer':
++               $input['impact_question'] = $input['_impact_question'];
++               break;
++            case 'specific':
++               $input['impact_question'] = $input['_impact_specific'];
++               break;
++            default:
++               $input['impact_question'] = '0';
++         }
++
+          switch ($input['category_rule']) {
+             case 'answer':
+                $input['category_question'] = $input['_category_question'];

@@ -49,6 +49,14 @@ class PluginFormcreatorTargetChange extends PluginFormcreatorTargetBase
       ];
    }
 
+   static function getEnumImpactRule() {
+      return [
+         'none'      => __('Medium', 'formcreator'),
+         'specific'  => __('Specific impact', 'formcreator'),
+         'answer'    => __('Equals to the answer to the question', 'formcreator'),
+      ];
+   }
+
    static function getEnumCategoryRule() {
       return [
          'none'      => __('None', 'formcreator'),
@@ -324,6 +332,11 @@ class PluginFormcreatorTargetChange extends PluginFormcreatorTargetBase
       // Urgency selection
       // -------------------------------------------------------------------------------------------
       $this->showUrgencySettings($rand);
+
+      // -------------------------------------------------------------------------------------------
+      // Impact selection
+      // -------------------------------------------------------------------------------------------
+      $this->showImpactSettings($rand);
 
       // -------------------------------------------------------------------------------------------
       //  Tags
@@ -900,6 +913,17 @@ class PluginFormcreatorTargetChange extends PluginFormcreatorTargetBase
                break;
             default:
                $input['urgency_question'] = '0';
+         }
+
+         switch ($input['impact_rule']) {
+            case 'answer':
+               $input['impact_question'] = $input['_impact_question'];
+               break;
+            case 'specific':
+               $input['impact_question'] = $input['_impact_specific'];
+               break;
+            default:
+               $input['impact_question'] = '0';
          }
 
          switch ($input['category_rule']) {
