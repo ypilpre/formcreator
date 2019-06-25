@@ -140,6 +140,15 @@ abstract class PluginFormcreatorTargetBase extends CommonDBTM implements PluginF
          'answer'    => __('Equals to the answer to the question', 'formcreator'),
       ];
    }
+   static function getEnumImpactRule() {
+      return [
+         'none'      => __('Impact from template or Medium', 'formcreator'),
+         'specific'  => __('Specific impact', 'formcreator'),
+         'answer'    => __('Equals to the answer to the question', 'formcreator'),
+      ];
+   }
+
+
 
    static function getEnumCategoryRule() {
       return [
@@ -884,6 +893,74 @@ EOS;
       }
       Dropdown::showFromArray('_urgency_question', $users_questions, [
          'value' => $this->fields['urgency_question'],
+      ]);
+      echo '</div>';
+      echo '</td>';
+      echo '</tr>';
+   }
+
+  protected function showImpactSettings($rand) {
+      global $DB;
+
+      echo '<tr class="line0">';
+      echo '<td width="15%">' . __('Impact') . '</td>';
+      echo '<td width="45%">';
+      Dropdown::showFromArray('impact_rule', static::getEnumImpactRule(), [
+         'value'                 => $this->fields['impact_rule'],
+         'on_change'             => 'change_impact()',
+         'rand'                  => $rand
+      ]);
+      $script = <<<EOS
+         function change_impact() {
+            $('#impact_specific_title').hide();
+            $('#impact_specific_value').hide();
+            $('#impact_question_title').hide();
+            $('#impact_question_value').hide();
+
+            switch($('#dropdown_impact_rule$rand').val()) {
+               case 'answer' :
+                  $('#impact_question_title').show();
+                  $('#impact_question_value').show();
+                  break;
+               case 'specific':
+                  $('#impact_specific_title').show();
+                  $('#impact_specific_value').show();
+                  break;
+            }
+         }
+         change_impact();
+EOS;
+      echo Html::scriptBlock($script);
+      echo '</td>';
+      echo '<td width="15%">';
+      echo '<span id="impact_question_title" style="display: none">' . __('Question', 'formcreator') . '</span>';
+      echo '<span id="impact_specific_title" style="display: none">' . __('Impact ', 'formcreator') . '</span>';
+      echo '</td>';
+      echo '<td width="25%">';
+
+      echo '<div id="impact_specific_value" style="display: none">';
+      Ticket::dropdownImpact([
+         'name' => '_impact_specific',
+         'value' => $this->fields["impact_question"],
+      ]);
+      echo '</div>';
+      echo '<div id="impact_question_value" style="display: none">';
+      // select all user questions (GLPI Object)
+      $query2 = "SELECT q.id, q.name, q.values
+                FROM glpi_plugin_formcreator_questions q
+                INNER JOIN glpi_plugin_formcreator_sections s
+                  ON s.id = q.plugin_formcreator_sections_id
+                INNER JOIN glpi_plugin_formcreator_targets t
+                  ON s.plugin_formcreator_forms_id = t.plugin_formcreator_forms_id
+                WHERE t.items_id = ".$this->getID()."
+                AND q.fieldtype = 'impact'";
+      $result2 = $DB->query($query2);
+      $users_questions = [];
+      while ($question = $DB->fetch_array($result2)) {
+         $users_questions[$question['id']] = $question['name'];
+      }
+      Dropdown::showFromArray('_impact_question', $users_questions, [
+         'value' => $this->fields['impact_question'],
       ]);
       echo '</div>';
       echo '</td>';
